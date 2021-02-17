@@ -18,7 +18,7 @@ void Game::initVariables()
 	this->boardPosition.y = static_cast<float>(videoMode.height - 80);
 
 	//init board 
-	this->reflectiveBoard.setSize(Vector2f(800.f, 10.f));
+	this->reflectiveBoard.setSize(Vector2f(200.f, 10.f));
 	this->reflectiveBoard.setFillColor(Color::White);
 	this->reflectiveBoard.setPosition(boardPosition);
 
@@ -27,7 +27,7 @@ void Game::initVariables()
 	this->ballPosition.y = static_cast<float>(videoMode.height - 105);
 
 	//init ball
-	this->ball.setRadius(5);
+	this->ball.setRadius(3);
 	this->reflectiveBoard.setFillColor(Color::White);
 	this->reflectiveBoard.setPosition(ballPosition);
 	this->ball.setPosition(this->ballPosition);
@@ -38,14 +38,11 @@ void Game::initLevel()
 {
 	VertexArray quad(sf::Quads, 4);
 
-	const int boxSideSize = 12;
-
-	int boxPerRowCount = (this->renderWindow->getSize().x - boxSideSize + 4) / 10;
-	int boxPerColumnCount = (this->renderWindow->getSize().y - (this->renderWindow->getSize().y / 2) - boxSideSize) / 10;
+	const int boxSideSize = 16;
 
 	for (unsigned int column = 5; column < (this->renderWindow->getSize().x - 5); column += boxSideSize + 6)
 	{
-		for (unsigned int row = 5; row < (this->renderWindow->getSize().y - (this->renderWindow->getSize().y / 2) - 10); row += boxSideSize + 6)
+		for (unsigned int row = 5; row < (this->renderWindow->getSize().y - (this->renderWindow->getSize().y / 2)); row += boxSideSize + 6)
 		{
 			if (static_cast<bool>(rand() % 2))
 			{
@@ -79,8 +76,8 @@ bool Game::boardIsHitted()
 {
 	if (this->ball.getPosition().y > (this->reflectiveBoard.getPosition().y + this->reflectiveBoard.getSize().y)) return false;
 	else return ((this->ball.getPosition().y + 2 * this->ball.getRadius()) >= this->boardPosition.y
-			&& this->ball.getPosition().x >= this->boardPosition.x
-			&& this->ball.getPosition().x <= (this->boardPosition.x + this->reflectiveBoard.getSize().x));
+		&& this->ball.getPosition().x >= this->boardPosition.x
+		&& this->ball.getPosition().x <= (this->boardPosition.x + this->reflectiveBoard.getSize().x));
 }
 
 bool Game::verticalEdgeIsHitted(Vector2f higherPoint, Vector2f lowerPoint, bool fromLeftSide)
@@ -91,7 +88,7 @@ bool Game::verticalEdgeIsHitted(Vector2f higherPoint, Vector2f lowerPoint, bool 
 	{
 		if (fromLeftSide) return ((this->ball.getPosition().x + 2 * this->ball.getRadius()) >= higherPoint.x);
 		else return (this->ball.getPosition().x <= higherPoint.x);
-	}		   
+	}
 }
 
 bool Game::horizontalEdgeIsHitted(Vector2f leftPoint, Vector2f rightPoint, bool fromAbove)
@@ -120,7 +117,7 @@ void Game::validatePosition()
 	}
 	//borders reflection statements
 	else if (this->verticalEdgeIsHitted(Vector2f(0, 0), Vector2f(0, static_cast<float>(this->renderWindow->getSize().y)), false) ||
-			this->verticalEdgeIsHitted(Vector2f(static_cast<float>(this->renderWindow->getSize().x), 0), Vector2f(static_cast<float>(this->renderWindow->getSize().x), static_cast<float>(this->renderWindow->getSize().y)), true))
+		this->verticalEdgeIsHitted(Vector2f(static_cast<float>(this->renderWindow->getSize().x), 0), Vector2f(static_cast<float>(this->renderWindow->getSize().x), static_cast<float>(this->renderWindow->getSize().y)), true))
 	{
 		this->offsetX = -this->offsetX;
 	}
@@ -132,8 +129,8 @@ void Game::validatePosition()
 	else
 	{
 		double distance = 10;
-		 
-		Vector2f ballCenter = Vector2f(static_cast<float>(this->ball.getPosition().x + 5), static_cast<float>(this->ball.getPosition().y + 5));
+
+		Vector2f ballCenter = Vector2f(static_cast<float>(this->ball.getPosition().x + this->ball.getRadius()), static_cast<float>(this->ball.getPosition().y + this->ball.getRadius()));
 		FloatRect rect;
 
 		for (int iter = 0; iter < this->boxes.size(); iter++)
@@ -141,8 +138,8 @@ void Game::validatePosition()
 			rect = this->boxes[iter].getBounds();
 
 			if (sqrt(pow(ballCenter.x - rect.left, 2) + pow(ballCenter.y - rect.top, 2)) < distance ||
-				sqrt(pow(ballCenter.x - (rect.left + rect.width), 2) + pow(ballCenter.y - rect.top, 2)) < distance || 
-				sqrt(pow(ballCenter.x - rect.left, 2) + pow(ballCenter.y - (rect.top + rect.height), 2)) < distance || 
+				sqrt(pow(ballCenter.x - (rect.left + rect.width), 2) + pow(ballCenter.y - rect.top, 2)) < distance ||
+				sqrt(pow(ballCenter.x - rect.left, 2) + pow(ballCenter.y - (rect.top + rect.height), 2)) < distance ||
 				sqrt(pow(ballCenter.x - (rect.left + rect.width), 2) + pow(ballCenter.y - (rect.top + rect.height), 2)) < distance)
 			{
 				if (this->verticalEdgeIsHitted(Vector2f(rect.left, rect.top), Vector2f(rect.left, rect.top + rect.height), false) ||
@@ -153,10 +150,10 @@ void Game::validatePosition()
 					this->boxes.erase(this->boxes.begin() + iter, this->boxes.begin() + iter + 1);
 				}
 				else if (this->horizontalEdgeIsHitted(Vector2f(rect.left, rect.top), Vector2f(rect.left + rect.width, rect.top), false) ||
-						this->horizontalEdgeIsHitted(Vector2f(rect.left, rect.top + rect.height), Vector2f(rect.left + rect.width, rect.top + rect.height), true))
+					this->horizontalEdgeIsHitted(Vector2f(rect.left, rect.top + rect.height), Vector2f(rect.left + rect.width, rect.top + rect.height), true))
 				{
 					this->offsetY = -this->offsetY;
-					
+
 					this->boxes.erase(this->boxes.begin() + iter, this->boxes.begin() + iter + 1);
 				}
 			}
@@ -185,53 +182,53 @@ void Game::eventsHandler()
 		switch (this->event.type)
 		{
 			//clode event
-			case sf::Event::Closed:
-			{
-				cout << "Closing window...\n";
+		case sf::Event::Closed:
+		{
+			cout << "Closing window...\n";
 
-				this->renderWindow->close();
+			this->renderWindow->close();
+
+			break;
+		}
+
+		//keyboard events case
+		case sf::Event::KeyPressed:
+		{
+			if (pseudoLogTimer == 0) cout << "Key " << this->event.key.code << " pressed\n";
+
+			switch (this->event.key.code)
+			{
+			case 0x47:
+			{
+				//key <--(left arrow)
+
+				//move to left
+				if (this->boardPosition.x > 0)
+					this->boardPosition.x = this->boardPosition.x - boardSpeed;
 
 				break;
 			}
 
-			//keyboard events case
-			case sf::Event::KeyPressed:
+			case 0x48:
 			{
-				if (pseudoLogTimer == 0) cout << "Key " << this->event.key.code << " pressed\n";
+				//key -->(right arrow)
 
-				switch (this->event.key.code)
-				{
-					case 0x47:
-					{
-						//key <--(left arrow)
-						
-						//move to left
-						if (this->boardPosition.x > 0)
-							this->boardPosition.x = this->boardPosition.x - boardSpeed;
-
-						break;
-					}
-
-					case 0x48:
-					{
-						//key -->(right arrow)
-
-						//move to right 
-						if((this->boardPosition.x + this->reflectiveBoard.getSize().x) < this->renderWindow->getSize().x)
-							this->boardPosition.x = this->boardPosition.x + boardSpeed;
-
-						break;
-					}
-
-					default: break;
-				}
-
-				cout << "boardPosition.x: " << this->boardPosition.x << endl;
+				//move to right 
+				if ((this->boardPosition.x + this->reflectiveBoard.getSize().x) < this->renderWindow->getSize().x)
+					this->boardPosition.x = this->boardPosition.x + boardSpeed;
 
 				break;
 			}
 
 			default: break;
+			}
+
+			cout << "boardPosition.x: " << this->boardPosition.x << endl;
+
+			break;
+		}
+
+		default: break;
 		}
 	}
 }

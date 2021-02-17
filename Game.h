@@ -22,6 +22,7 @@ using sf::Vertex;
 using sf::VertexArray;
 using sf::PrimitiveType;
 using sf::FloatRect;
+using sf::Texture;
 
 using std::cout;
 using std::endl;
@@ -55,6 +56,7 @@ private:
 	const float boardSpeed = 20.f;
 
 	vector <VertexArray> boxes; //vector box elem
+	Texture gangster;
 
 	//private Functions
 	bool boardIsHitted();
